@@ -596,6 +596,33 @@ class Gui():
         self.ui.teFeedback.setStyleSheet("background-color: pink;")
 
 
+    def update_axis_2(self):
+        target = np.deg2rad(s['axis1'].rotation)
+
+        a = target[0]
+        b = target[1]
+        c = target[2]
+
+        from math import atan, sqrt, tan
+
+
+        a2 = a**2
+        b2 = b**2
+        c2 = c**2
+
+        n = sqrt(a**2 + b**2 + c**2)
+        tn4 = tan(n/4)
+
+
+        x1 = -4*atan((2*a*tn4 + sqrt(a2*tn4**4 + 2*a2*tn4**2 + a2 + b2*tn4**4 - 2*b2*tn4**2 + b2 + c2*tn4**4 - 2*c2*tn4**2 + c2))/((tn4**2 - 1)*n))
+
+        x2 = -4*atan((2*a*tn4 - sqrt(a2*tn4**4 + 2*a2*tn4**2 + a2 + b2*tn4**4 - 2*b2*tn4**2 + b2 + c2*tn4**4 - 2*c2*tn4**2 + c2))/((tn4**2 - 1)*n))
+
+        print((x1, x2))
+
+        s['axis2'].rotation = np.rad2deg((x1 + 3.14159, 0, 0))
+        s['axis3'].set_rotation_to_estimate(s['axis1'].rotation)
+
 
     def run_code(self, code, event):
         """Runs the provided code
@@ -613,13 +640,23 @@ class Gui():
         self.ui.teFeedback.setStyleSheet("")
         self.ui.teFeedback.clear()
 
-
-
-
         with capture_output() as c:
 
             try:
                 exec(code)
+
+
+
+                self.update_axis_2()
+
+
+
+
+
+
+
+
+
 
                 if c.stdout:
                     self.ui.teFeedback.append(c.stdout)
@@ -1178,4 +1215,12 @@ class Gui():
 # ====== main code ======
 
 if __name__ == '__main__':
-    pass
+
+
+    s = Scene()
+    a1 = s.new_axis('axis1', rotation = (1,2,3))
+    s.new_axis('axis2',position=(2,0,0))
+    a3 = s.new_axis('axis3',position=(-2,0,0), fixed = (True,True,True,False,True,True))
+
+
+    Gui(s)

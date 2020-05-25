@@ -773,6 +773,14 @@ class Axis(NodeWithParent):
         self._vfNode.rotation = np.deg2rad(var)
         self._scene._geometry_changed()
 
+    def set_rotation_to_estimate(self, rotation):
+        assert3f(rotation, "Rotation ")
+        target = np.deg2rad(rotation)
+        print(target)
+        self._vfNode.set_rotation_to_estimate(target)
+        print(self._vfNode.rotation)
+        self._scene._geometry_changed()
+
     # we need to over-ride the parent property to be able to call _geometry_changed afterwards
     @property
     def parent(self):
